@@ -1,0 +1,25 @@
+Source: ppt
+Section: photogrammetry
+Priority: extra
+Maintainer: Romain Janvier <romain.janvier@hotmail.fr>
+Build-Depends: debhelper (>= 9.0.0)
+Standards-Version: 3.9.4
+Homepage: http://code.google.com/p/osm-bundler/
+Vcs-Git: git://github.com/archeos/ppt-archeos.git
+Vcs-Browser:https://github.com/archeos/ppt-archeos/
+
+Package: ppt
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Python Photogrammetry Toolbox
+ This project intend to create a python photogrammetry toolbox. 
+ It provides an easy interface to run Bundler (MultiThreaded) + Dense point 
+ cloud computation via PMVS2 and CMVS (as WIP). The main drawbacks 
+ of Bundler is that people have to install cygwin to use it and 
+ Windows. Python scripting language is multiplatform, so the same 
+ code will be ok to run Bundler and the other tools on Windows, 
+ Linux and MacOS! No more cygwin installation. 
+ This project make the Sift detector from VLFeat 
+ library works with Bundler. The pipeline is OpenSource
+ from A to Z. Other modules could be plug into because of the 
+ modularity approach that have been chosen (siftGPU...)
