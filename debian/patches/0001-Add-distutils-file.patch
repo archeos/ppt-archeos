@@ -1,0 +1,34 @@
+--- /dev/null
++++ b/setup.py
+@@ -0,0 +1,31 @@
++#!/usr/bin/env python
++
++from distutils.core import setup
++
++setup(name='Python Photogrammetry Toolbox',
++ version='0.1',
++ description='A set of python scripts that create a complete photogrammetric pipeline',
++ author='Pierre Moulon',
++ author_email='pmoulon@gmail.com',
++ url='http://code.google.com/p/osm-bundler/',
++ maintainer="Romain Janvier",
++ maintainer_email="romain.janvier@hotmail.fr",
++ license='GPL2',
++ packages = ['osmbundler', 
++	 'osmbundler.features',
++	 'osmbundler.matching',
++	 'osmcmvs',
++	 'osmpmvs',
++	],
++ scripts=['RunBundler.py', 
++	 'RunCMVS.py', 
++	 'RunPMVS.py'
++	 ],
++ data_files=[('cameras',
++	 ['osmbundler/cameras/cameras.sqlite'])],
++ requires=['bundlersfm', 
++	 'vlfeat', 
++	 'cmvspmvs2',
++	 'PIL',
++	 ],
++ )

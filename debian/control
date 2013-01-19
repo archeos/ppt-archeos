@@ -2,15 +2,16 @@ Source: ppt
 Section: photogrammetry
 Priority: extra
 Maintainer: Romain Janvier <romain.janvier@hotmail.fr>
-Build-Depends: debhelper (>= 9.0.0)
+Build-Depends: python, debhelper (>= 9.0.0)
+X-Python-Version: >= 2.7
 Standards-Version: 3.9.4
 Homepage: http://code.google.com/p/osm-bundler/
 Vcs-Git: git://github.com/archeos/ppt-archeos.git
 Vcs-Browser:https://github.com/archeos/ppt-archeos/
 
 Package: ppt
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}
 Description: Python Photogrammetry Toolbox
  This project intend to create a python photogrammetry toolbox. 
  It provides an easy interface to run Bundler (MultiThreaded) + Dense point 

@@ -1,0 +1,3 @@
+/usr/share/ppt/RunBundler.py /usr/bin/RunBundler
+/usr/share/ppt/RunCMVS.py /usr/bin/RunCMVS
+/usr/share/ppt/RunPMVS.py /usr/bin/RunPMVS
