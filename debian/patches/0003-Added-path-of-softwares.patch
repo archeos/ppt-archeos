@@ -1,5 +1,5 @@
---- ppt-0.1.orig/osmbundler/__init__.py
-+++ ppt-0.1/osmbundler/__init__.py
+--- a/osmbundler/__init__.py
++++ b/osmbundler/__init__.py
 @@ -1,5 +1,5 @@
  import logging
 -import sys, os, getopt, tempfile, subprocess
@@ -7,21 +7,23 @@
  import sqlite3
  
  from PIL import Image
-@@ -14,26 +14,35 @@ import features
+@@ -14,26 +14,37 @@ import features
  from features import *
  
  # a helper function to get list of photos from a directory
 +# Todo maybe better w/ glob
  def getPhotosFromDirectory(photoDir):
 -    return [f for f in os.listdir(photoDir) if os.path.isfile(os.path.join(photoDir, f)) and os.path.splitext(f)[1].lower()==".jpg"]
+-
+-
+-distrPath = os.path.dirname( os.path.abspath(sys.argv[0]) )
 +    return [f for f in os.listdir(photoDir) 
 +			if os.path.isfile(os.path.join(photoDir, f)) 
 +			and os.path.splitext(f)[1].lower()==".jpg"]
- 
--
--distrPath = os.path.dirname( os.path.abspath(sys.argv[0]) )
++
 +#
 +distrPath = os.path.dirname(os.path.abspath(sys.argv[0]))
++print distrPath
  bundlerExecutable = ''
 -if sys.platform == "win32": bundlerExecutable = os.path.join(distrPath, "software/bundler/bin/bundler.exe")
 -else: bundlerExecutable = os.path.join(distrPath, "software/bundler/bin/bundler")
@@ -30,10 +32,11 @@
 +else: 
 +	bundlerExecutable =  "bundler"
 +
-+#TODO: Database is a dot file, must be copied on first call if doesn't 
-+#exist... (change not compatible with Windows)
-+camaerasDatabaseInit = os.path.join(distrPath, "cameras/cameras.sqlite")
-+camerasDatabase = "~/.ppt/cameras/cameras.sqlite"
++# Database is a dot file, must be copied on first call if doesn't 
++# exist... (change not compatible with Windows)
++# TODO : cameraDbInstall is harcoded, it should be dynamic (see distutils)
++camerasDbInstall = "/usr/share/ppt/cameras/cameras.sqlite"
++camerasDatabase =  os.path.join(os.path.expanduser("~"),  ".ppt/cameras.sqlite")
 +
 +commandLineLongFlags = [
 +	"photos=",
@@ -57,7 +60,7 @@
  exifAttrs = set(["Model", "Make", "ExifImageWidth", "ExifImageHeight", "FocalLength"])
  
  class ZeroValueException(Exception):
-@@ -41,56 +50,41 @@ class ZeroValueException(Exception):
+@@ -41,56 +52,41 @@ class ZeroValueException(Exception):
      Used to process user input
      """
  
@@ -117,7 +120,26 @@
          # initialize feature extractor based on command line arguments
          self.initFeatureExtractor()
  
-@@ -152,7 +146,7 @@ class OsmBundler():
+@@ -129,12 +125,17 @@ class OsmBundler():
+                 self.printHelpExit()
+         
+         if self.photosArg=="": self.printHelpExit()
++    
++    def checkConfig(self, *kargs, **kwargs):
++        if not os.path.exists(camerasDatabase):
++            os.mkdir(os.path.dirname(camerasDatabase))
++            shutil.copy(camerasDbInstall, camerasDatabase)
++
+ 
+     def preparePhotos(self, *kargs, **kwargs):
+         # open each photo, resize, convert to pgm, copy it to self.workDir and calculate focal distance
+         # conversion to pgm is performed by PIL library
+         # EXIF reading is performed by PIL library
+-        
+         # open connection to cameras database
+         conn = sqlite3.connect(camerasDatabase)
+         self.dbCursor = conn.cursor()
+@@ -152,7 +153,7 @@ class OsmBundler():
          if os.path.isdir(self.photosArg):
              # directory with images
              photos = getPhotosFromDirectory(self.photosArg)
@@ -126,23 +148,19 @@
              for photo in photos:
                  photoInfo = dict(dirname=self.photosArg, basename=photo)
                  self._preparePhoto(photoInfo)
-@@ -177,7 +171,13 @@ class OsmBundler():
+@@ -176,8 +177,8 @@ class OsmBundler():
+         self.dbCursor.close()
  
  
-     def checkCamerasInDatabase(self):
+-    def checkCamerasInDatabase(self):
 -        # open connection to cameras database
-+        # check if camerasDatabase exits
-+		# if not, then copy it from install repo
-+        if not os.path.exists(camerasDatabase):
-+            os.mkdir(os.path.dirname(camerasDatabase))
-+            shutil.copy(camerasDatabaseInit, camerasDatabase)
-+
++    def checkCamerasInDatabase(self):	
 +        # open connection to cameras database	
          conn = sqlite3.connect(camerasDatabase)
          self.dbCursor = conn.cursor()
      
---- ppt-0.1.orig/osmbundler/features/siftvlfeat.py
-+++ ppt-0.1/osmbundler/features/siftvlfeat.py
+--- a/osmbundler/features/siftvlfeat.py
++++ b/osmbundler/features/siftvlfeat.py
 @@ -6,7 +6,7 @@ className = "VlfeatSift"
  class VlfeatSift(Sift):
      
@@ -159,8 +177,8 @@
 -        logging.info("\tFound %s features" % numFeatures)
 \ No newline at end of file
 +        logging.info("\tFound %s features" % numFeatures)
---- ppt-0.1.orig/osmbundler/matching/bundler.py
-+++ ppt-0.1/osmbundler/matching/bundler.py
+--- a/osmbundler/matching/bundler.py
++++ b/osmbundler/matching/bundler.py
 @@ -11,9 +11,9 @@ class BundlerMatching(MatchingEngine):
          if sys.platform == "win32":
              self.executable = os.path.join(distrDir, "bundler/bin/KeyMatchFull.exe")
@@ -174,8 +192,8 @@
 -        subprocess.call([self.executable, self.featuresListFileName, self.outputFileName])
 \ No newline at end of file
 +        subprocess.call([self.executable, self.featuresListFileName, self.outputFileName])
---- ppt-0.1.orig/osmpmvs/__init__.py
-+++ ppt-0.1/osmpmvs/__init__.py
+--- a/osmpmvs/__init__.py
++++ b/osmpmvs/__init__.py
 @@ -8,15 +8,15 @@ def getExecPath(dir, fileName):
      
  distrPath = os.path.dirname( os.path.abspath(sys.argv[0]) )
@@ -196,8 +214,8 @@
  
  bundlerListFileName = "list.txt"
  
---- ppt-0.1.orig/osmcmvs/__init__.py
-+++ ppt-0.1/osmcmvs/__init__.py
+--- a/osmcmvs/__init__.py
++++ b/osmcmvs/__init__.py
 @@ -1,5 +1,5 @@
  import logging
 -import sys, os, getopt, tempfile, subprocess, shutil
@@ -229,3 +247,27 @@
  
  bundlerListFileName = "list.txt"
  
+--- a/RunBundler.py
++++ b/RunBundler.py
+@@ -10,6 +10,7 @@ def main():
+ 	and run Bundler pipeline
+ 	"""
+ 	manager = osmbundler.OsmBundler()
++	manager.checkConfig()
+ 	manager.preparePhotos()
+ 	manager.matchFeatures()
+ 	manager.doBundleAdjustment()
+--- a/osmbundler/features/sift.py
++++ b/osmbundler/features/sift.py
+@@ -14,8 +14,8 @@ class Sift(FeatureExtractor):
+         if sys.platform == "win32":
+             self.executable = os.path.join(distrDir, self.win32Executable)
+         else:
+-            self.executable = os.path.join(distrDir, self.linuxExecutable)
++            self.executable = os.path.join(self.linuxExecutable)
+         logging.info("Sift executable path: %s" % self.executable)
+ 
+     def extract(self, photo, photoInfo):
+-        pass
+\ No newline at end of file
++        pass
