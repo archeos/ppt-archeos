@@ -3,7 +3,7 @@
 @@ -1,5 +1,5 @@
  import logging
 -import sys, os, getopt, tempfile, subprocess
-+import sys, os, getopt, tempfile, subprocess, shutils
++import sys, os, getopt, tempfile, subprocess, shutil
  import sqlite3
  
  from PIL import Image
@@ -135,7 +135,7 @@
 +		# if not, then copy it from install repo
 +        if not os.path.exists(camerasDatabase):
 +            os.mkdir(os.path.dirname(camerasDatabase))
-+            shutils.copy(camerasDatabaseInit, camerasDatabase)
++            shutil.copy(camerasDatabaseInit, camerasDatabase)
 +
 +        # open connection to cameras database	
          conn = sqlite3.connect(camerasDatabase)
