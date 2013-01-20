@@ -1,5 +1,10 @@
 ppt (0.1-0archeos1) therodoric; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial release
+  * Some minor fix in scripts
+  * Camera database is now a proper dot file: on runtime, it's copied from install 
+    dir to ~/.ppt. It fix the need to have a writable file in the
+    /usr/share/directory and now each user have his own database.
+  * Default behavior when running pmvs is to remove old pmvs dir.
 
- -- Romain Janvier <romain.janvier@hotmail.fr>  Fri, 18 Jan 2013 20:26:54 +0100
+ -- Romain Janvier <romain.janvier@hotmail.fr>  Sun, 20 Jan 2013 20:01:55 +0100
