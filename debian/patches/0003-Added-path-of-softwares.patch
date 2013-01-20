@@ -30,12 +30,12 @@
 +if sys.platform == "win32": 
 +	bundlerExecutable = os.path.join(distrPath, "software/bundler/bin/bundler.exe")
 +else: 
-+	bundlerExecutable =  "bundler"
++	bundlerExecutable =  "Bundler"
 +
 +# Database is a dot file, must be copied on first call if doesn't 
 +# exist... (change not compatible with Windows)
 +# TODO : cameraDbInstall is harcoded, it should be dynamic (see distutils)
-+camerasDbInstall = "/usr/share/ppt/cameras/cameras.sqlite"
++camerasDbInstall = "cameras/cameras.sqlite"
 +camerasDatabase =  os.path.join(os.path.expanduser("~"),  ".ppt/cameras.sqlite")
 +
 +commandLineLongFlags = [
