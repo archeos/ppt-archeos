@@ -32,7 +32,7 @@
 +
 +#TODO: Database is a dot file, must be copied on first call if doesn't 
 +#exist... (change not compatible with Windows)
-+camaerasDatabaseInit = Os.path.join(distrPath, "cameras/cameras.sqlite")
++camaerasDatabaseInit = os.path.join(distrPath, "cameras/cameras.sqlite")
 +camerasDatabase = "~/.ppt/cameras/cameras.sqlite"
 +
 +commandLineLongFlags = [
