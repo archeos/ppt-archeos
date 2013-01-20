@@ -1,0 +1,231 @@
+--- ppt-0.1.orig/osmbundler/__init__.py
++++ ppt-0.1/osmbundler/__init__.py
+@@ -1,5 +1,5 @@
+ import logging
+-import sys, os, getopt, tempfile, subprocess
++import sys, os, getopt, tempfile, subprocess, shutils
+ import sqlite3
+ 
+ from PIL import Image
+@@ -14,26 +14,35 @@ import features
+ from features import *
+ 
+ # a helper function to get list of photos from a directory
++# Todo maybe better w/ glob
+ def getPhotosFromDirectory(photoDir):
+-    return [f for f in os.listdir(photoDir) if os.path.isfile(os.path.join(photoDir, f)) and os.path.splitext(f)[1].lower()==".jpg"]
++    return [f for f in os.listdir(photoDir) 
++			if os.path.isfile(os.path.join(photoDir, f)) 
++			and os.path.splitext(f)[1].lower()==".jpg"]
+ 
+-
+-distrPath = os.path.dirname( os.path.abspath(sys.argv[0]) )
++#
++distrPath = os.path.dirname(os.path.abspath(sys.argv[0]))
+ bundlerExecutable = ''
+-if sys.platform == "win32": bundlerExecutable = os.path.join(distrPath, "software/bundler/bin/bundler.exe")
+-else: bundlerExecutable = os.path.join(distrPath, "software/bundler/bin/bundler")
++if sys.platform == "win32": 
++	bundlerExecutable = os.path.join(distrPath, "software/bundler/bin/bundler.exe")
++else: 
++	bundlerExecutable =  "bundler"
++
++#TODO: Database is a dot file, must be copied on first call if doesn't 
++#exist... (change not compatible with Windows)
++camaerasDatabaseInit = Os.path.join(distrPath, "cameras/cameras.sqlite")
++camerasDatabase = "~/.ppt/cameras/cameras.sqlite"
++
++commandLineLongFlags = [
++	"photos=",
++	"maxPhotoDimension=",
++	"featureExtractor=",
++	"photoScalingFactor=",
++	"checkCameraDatabase"
++	]
+ 
+ SCALE = 1.0
+ bundlerListFileName = "list.txt"
+-
+-camerasDatabase = os.path.join(distrPath, "osmbundler/cameras/cameras.sqlite")
+-commandLineLongFlags = [
+-"photos=",
+-"maxPhotoDimension=",
+-"featureExtractor=",
+-"photoScalingFactor=",
+-"checkCameraDatabase"
+-]
+ exifAttrs = set(["Model", "Make", "ExifImageWidth", "ExifImageHeight", "FocalLength"])
+ 
+ class ZeroValueException(Exception):
+@@ -41,56 +50,41 @@ class ZeroValueException(Exception):
+     Used to process user input
+     """
+ 
+-
+ class OsmBundler():
+-
+     currentDir = ""
+-
+     workDir = ""
+-    
+     # value of command line argument --photos=<..>
+-    photosArg = ""
+-    
++    photosArg = "" 
+     featureExtractor = None
+-    
+     matchingEngine = None
+-    
+     # sqlite cursor
+-    dbCursor = None
+-    
++    dbCursor = None  
+     # list of photos with focal distances for bundler input
+     bundlerListFile = None
+-    
+     # list of files with extracted features
+     featuresListFile = None
+-    
+     # information about each processed photo is stored in the following dictionary
+     # photo file name in self.workDir is used as the key in this dictionary
+     photoDict = {}
+-    
+     featureExtractionNeeded = True
+-    
+     photoScalingFactor = 0
+ 
+     def __init__(self):
+         for attr in dir(defaults):
+             if attr[0]!='_':
+                 setattr(self, attr, getattr(defaults, attr))
+-        
+         self.parseCommandLineFlags()
+-
+         # save current directory (i.e. from where RunBundler.py is called)
+         self.currentDir = os.getcwd()
+         # create a working directory
++		# TODO: Change working dir = pwd
+         self.workDir = tempfile.mkdtemp(prefix="osm-bundler-")
+         logging.info("Working directory created: "+self.workDir)
+         
+         if not (os.path.isdir(self.photosArg) or os.path.isfile(self.photosArg)):
+             raise Exception, "'%s' is neither directory nor a file name" % self.photosArg
+-        
+         # initialize mathing engine based on command line arguments
+         self.initMatchingEngine()
+-
+         # initialize feature extractor based on command line arguments
+         self.initFeatureExtractor()
+ 
+@@ -152,7 +146,7 @@ class OsmBundler():
+         if os.path.isdir(self.photosArg):
+             # directory with images
+             photos = getPhotosFromDirectory(self.photosArg)
+-            if len(photos)<3: raise Exception, "The directory with images should contain at least 3 .jpg photos"
++            if len(photos)<3: raise Exception, "Project directory should contain at least 3 .jpg photos"
+             for photo in photos:
+                 photoInfo = dict(dirname=self.photosArg, basename=photo)
+                 self._preparePhoto(photoInfo)
+@@ -177,7 +171,13 @@ class OsmBundler():
+ 
+ 
+     def checkCamerasInDatabase(self):
+-        # open connection to cameras database
++        # check if camerasDatabase exits
++		# if not, then copy it from install repo
++        if not os.path.exists(camerasDatabase):
++            os.mkdir(os.path.dirname(camerasDatabase))
++            shutils.copy(camerasDatabaseInit, camerasDatabase)
++
++        # open connection to cameras database	
+         conn = sqlite3.connect(camerasDatabase)
+         self.dbCursor = conn.cursor()
+     
+--- ppt-0.1.orig/osmbundler/features/siftvlfeat.py
++++ ppt-0.1/osmbundler/features/siftvlfeat.py
+@@ -6,7 +6,7 @@ className = "VlfeatSift"
+ class VlfeatSift(Sift):
+     
+     win32Executable = "vlfeat/bin/w32/sift.exe"
+-    linuxExecutable = "vlfeat/bin/glx/sift"
++    linuxExecutable = "sift"
+ 
+     def __init__(self, distrDir):
+         Sift.__init__(self, distrDir)
+@@ -35,4 +35,4 @@ class VlfeatSift(Sift):
+         vlfeatTextFile.close()
+         # remove original SIFT file
+         os.remove("%s.key" % photo)
+-        logging.info("\tFound %s features" % numFeatures)
+\ No newline at end of file
++        logging.info("\tFound %s features" % numFeatures)
+--- ppt-0.1.orig/osmbundler/matching/bundler.py
++++ ppt-0.1/osmbundler/matching/bundler.py
+@@ -11,9 +11,9 @@ class BundlerMatching(MatchingEngine):
+         if sys.platform == "win32":
+             self.executable = os.path.join(distrDir, "bundler/bin/KeyMatchFull.exe")
+         else:
+-            self.executable = os.path.join(distrDir, "bundler/bin/KeyMatchFull")
++            self.executable = "KeyMatchFull"
+         logging.info("BundlerMatching executable path: %s" % self.executable)
+ 
+     def match(self):
+         logging.info("\nPerforming feature matching...")
+-        subprocess.call([self.executable, self.featuresListFileName, self.outputFileName])
+\ No newline at end of file
++        subprocess.call([self.executable, self.featuresListFileName, self.outputFileName])
+--- ppt-0.1.orig/osmpmvs/__init__.py
++++ ppt-0.1/osmpmvs/__init__.py
+@@ -8,15 +8,15 @@ def getExecPath(dir, fileName):
+     
+ distrPath = os.path.dirname( os.path.abspath(sys.argv[0]) )
+ 
+-pmvsExecutable = getExecPath(distrPath, "software/pmvs/bin/pmvs2")
++pmvsExecutable = "pmvs2"
+ 
+ bundlerBinPath = ''
+ if sys.platform == "win32": bundlerBinPath = os.path.join(distrPath, "software/bundler/bin/")
+ else: bundlerBinPath = os.path.join(distrPath, "software/bundler/bin/")
+ 
+-bundler2PmvsExecutable = getExecPath(bundlerBinPath, "Bundle2PMVS")
+-RadialUndistordExecutable = getExecPath(bundlerBinPath, "RadialUndistort")
+-Bundle2VisExecutable = getExecPath(bundlerBinPath, "Bundle2Vis")
++bundler2PmvsExecutable =  "Bundle2PMVS"
++RadialUndistordExecutable = "RadialUndistort"
++Bundle2VisExecutable =  "Bundle2Vis"
+ 
+ bundlerListFileName = "list.txt"
+ 
+--- ppt-0.1.orig/osmcmvs/__init__.py
++++ ppt-0.1/osmcmvs/__init__.py
+@@ -1,5 +1,5 @@
+ import logging
+-import sys, os, getopt, tempfile, subprocess, shutil
++import sys, os, getopt, subprocess, shutil
+ 
+ # service function: get path of an executable (.exe suffix is added if we are on Windows)
+ def getExecPath(dir, fileName):
+@@ -8,17 +8,17 @@ def getExecPath(dir, fileName):
+     
+ distrPath = os.path.dirname( os.path.abspath(sys.argv[0]) )
+ 
+-pmvsExecutable = getExecPath(distrPath, "software/pmvs/bin/pmvs2")
+-cmvsExecutable = getExecPath(distrPath, "software/cmvs/bin/cmvs")
+-genOptionExecutable = getExecPath(distrPath, "software/pmvs/bin/genOption")
++pmvsExecutable = "pmvs2"
++cmvsExecutable = "cmvs"
++genOptionExecutable = "genOption"
+ 
+ bundlerBinPath = ''
+ if sys.platform == "win32": bundlerBinPath = os.path.join(distrPath, "software/bundler/bin/")
+ else: bundlerBinPath = os.path.join(distrPath, "software/bundler/bin/")
+ 
+-bundler2PmvsExecutable = getExecPath(bundlerBinPath, "Bundle2PMVS")
+-RadialUndistordExecutable = getExecPath(bundlerBinPath, "RadialUndistort")
+-Bundle2VisExecutable = getExecPath(bundlerBinPath, "Bundle2Vis")
++bundler2PmvsExecutable = "Bundle2PMVS"
++RadialUndistordExecutable =  "RadialUndistort"
++Bundle2VisExecutable = "Bundle2Vis"
+ 
+ bundlerListFileName = "list.txt"
+ 
