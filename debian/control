@@ -11,7 +11,7 @@ Vcs-Browser:https://github.com/archeos/ppt-archeos/
 
 Package: ppt
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}
+Depends: ${misc:Depends}, ${python:Depends}, bundlersfm, vlfeat, cmvspmvs, python-imaging, xdg-utils
 Description: Python Photogrammetry Toolbox
  This project intend to create a python photogrammetry toolbox. 
  It provides an easy interface to run Bundler (MultiThreaded) + Dense point 
