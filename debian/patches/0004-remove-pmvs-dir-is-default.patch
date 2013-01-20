@@ -1,30 +1,34 @@
 --- a/osmcmvs/__init__.py
 +++ b/osmcmvs/__init__.py
-@@ -69,7 +69,11 @@ class OsmCmvs():
+@@ -69,8 +69,12 @@ class OsmCmvs():
          # just run Bundle2PMVS here
          logging.info("\nPerforming Bundler2PMVS conversion...")
          os.chdir(self.workDir)
 -        os.mkdir("pmvs")
+-
 +        try:
 +            os.mkdir("pmvs")
 +        #New behavior: remove pmvs dir
 +        except OSError:
-+            os.rmdir("pmvs")
- 
++            shutil.rmtree("pmvs")
++            os.mkdir("pmvs")
          # Create directory structure
          os.mkdir("pmvs/txt")
+         os.mkdir("pmvs/visualize")
 --- a/osmpmvs/__init__.py
 +++ b/osmpmvs/__init__.py
-@@ -63,7 +63,11 @@ class OsmPmvs():
+@@ -63,8 +63,12 @@ class OsmPmvs():
          # just run Bundle2PMVS here
          logging.info("\nPerforming Bundler2PMVS conversion...")
          os.chdir(self.workDir)
 -        os.mkdir("pmvs")
+-
 +        try:
 +            os.mkdir("pmvs")
 +        #New behavior: remove pmvs dir
 +        except OSError:
-+            os.rmdir("pmvs")
- 
++            shutil.rmtree("pmvs")
++            os.mkdir("pmvs")
          # Create directory structure
          os.mkdir("pmvs/txt")
+         os.mkdir("pmvs/visualize")
