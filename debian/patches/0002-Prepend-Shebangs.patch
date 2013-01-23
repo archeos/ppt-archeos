@@ -1,7 +1,7 @@
 --- a/RunBundler.py
 +++ b/RunBundler.py
 @@ -1,16 +1,21 @@
-+#!/usr/bin/python
++#!/usr/bin/python -u
  import logging
  import osmbundler
  
@@ -33,7 +33,7 @@
 --- a/RunCMVS.py
 +++ b/RunCMVS.py
 @@ -1,13 +1,20 @@
-+#!/usr/bin/python
++#!/usr/bin/python -u
 +
  import logging
  import osmcmvs
@@ -62,7 +62,7 @@
 --- a/RunPMVS.py
 +++ b/RunPMVS.py
 @@ -1,13 +1,20 @@
-+#!/usr/bin/python
++#!/usr/bin/python -u
 +
  import logging
  import osmpmvs
