@@ -1,7 +1,9 @@
 From: Romain Janvier <romain.janvier@hotmail.fr>
 Date: Wed, 23 Jan 2013 10:20:38 +0100
-Subject: remove-pmvs-dir-is-default
+Subject: Remove-pmvs-dir-is-default
 
+Application now remove pmvs dir if it exists in
+the target directory
 ---
  osmcmvs/__init__.py |    8 ++++++--
  osmpmvs/__init__.py |    8 ++++++--
