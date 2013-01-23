@@ -2,8 +2,9 @@ ppt (0.1-0archeos1) therodoric; urgency=low
 
   * Initial release
   * Some minor fix in scripts
-  * Camera database is now a proper dot file: on runtime, it's copied from install 
-    dir to ~/.ppt. It fix the need to have a writable file in the
+  * Camera database is now a proper dot file: on runtime
+    it's copied from install dir to ~/.ppt. 
+    It fix the need to have a writable file in the
     /usr/share/directory and now each user have his own database.
   * Default behavior when running pmvs is to remove old pmvs dir.
 
