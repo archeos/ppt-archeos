@@ -1,0 +1,121 @@
+From: Romain Janvier <romain.janvier@hotmail.fr>
+Date: Wed, 23 Jan 2013 11:02:48 +0100
+Subject: Remove Windows EOL
+
+---
+ RunBundler.py |   34 +++++++++++++++++-----------------
+ RunCMVS.py    |   30 +++++++++++++++---------------
+ RunPMVS.py    |   32 ++++++++++++++++----------------
+ 3 files changed, 48 insertions(+), 48 deletions(-)
+
+diff --git a/RunBundler.py b/RunBundler.py
+index 3d8532c..f33a7a3 100644
+--- a/RunBundler.py
++++ b/RunBundler.py
+@@ -1,17 +1,17 @@
+-#!/usr/bin/python -u
+-import osmbundler
+-
+-def main():
+-	"""Main function: 	
+-	initialize OsmBundler manager class
+-	and run Bundler pipeline
+-	"""
+-	manager = osmbundler.OsmBundler()
+-	manager.checkConfig()
+-	manager.preparePhotos()
+-	manager.matchFeatures()
+-	manager.doBundleAdjustment()
+-	manager.openResult()
+-
+-if __name__ == '__main__':
+-	main()
++#!/usr/bin/python -u
++import osmbundler
++
++def main():
++	"""Main function: 	
++	initialize OsmBundler manager class
++	and run Bundler pipeline
++	"""
++	manager = osmbundler.OsmBundler()
++	manager.checkConfig()
++	manager.preparePhotos()
++	manager.matchFeatures()
++	manager.doBundleAdjustment()
++	manager.openResult()
++
++if __name__ == '__main__':
++	main()
+diff --git a/RunCMVS.py b/RunCMVS.py
+index 0e02e30..b8bbef0 100644
+--- a/RunCMVS.py
++++ b/RunCMVS.py
+@@ -1,15 +1,15 @@
+-#!/usr/bin/python -u
+-
+-import osmcmvs
+-
+-def main():
+-	"""Main function"""
+-	# initialize OsmCMVS manager class
+-	manager = osmcmvs.OsmCmvs()
+-	# initialize PMVS input from Bundler output
+-	manager.doBundle2PMVS()
+-	# call PMVS
+-	manager.doCMVS()
+-
+-if __name__ == '__main__':
+-	main()
++#!/usr/bin/python -u
++
++import osmcmvs
++
++def main():
++	"""Main function"""
++	# initialize OsmCMVS manager class
++	manager = osmcmvs.OsmCmvs()
++	# initialize PMVS input from Bundler output
++	manager.doBundle2PMVS()
++	# call PMVS
++	manager.doCMVS()
++
++if __name__ == '__main__':
++	main()
+diff --git a/RunPMVS.py b/RunPMVS.py
+index cb1169f..fad4e94 100644
+--- a/RunPMVS.py
++++ b/RunPMVS.py
+@@ -1,16 +1,16 @@
+-#!/usr/bin/python -u
+-import osmpmvs
+-
+-def main():
+-	"""Main function:
+-	run osmpmvs pipeline
+-	"""
+-	# initialize OsmPMVS manager class
+-	manager = osmpmvs.OsmPmvs()
+-	# initialize PMVS input from Bundler output
+-	manager.doBundle2PMVS()
+-	# call PMVS
+-	manager.doPMVS()
+-
+-if __name__ == '__main__':
+-	main()
++#!/usr/bin/python -u
++import osmpmvs
++
++def main():
++	"""Main function:
++	run osmpmvs pipeline
++	"""
++	# initialize OsmPMVS manager class
++	manager = osmpmvs.OsmPmvs()
++	# initialize PMVS input from Bundler output
++	manager.doBundle2PMVS()
++	# call PMVS
++	manager.doPMVS()
++
++if __name__ == '__main__':
++	main()

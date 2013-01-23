@@ -3,3 +3,4 @@
 0003-Added-path-of-softwares.patch
 0004-remove-pmvs-dir-is-default.patch
 0005-Remove-inconsitent-use-of-logging.patch
+0006-Remove-Windows-EOL.patch
