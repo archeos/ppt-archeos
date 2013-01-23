@@ -1,3 +1,15 @@
+From: Romain Janvier <romain.janvier@hotmail.fr>
+Date: Wed, 23 Jan 2013 10:20:38 +0100
+Subject: Add-distutils-file
+
+---
+ setup.py |   35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+ create mode 100644 setup.py
+
+diff --git a/setup.py b/setup.py
+new file mode 100644
+index 0000000..e146c3f
 --- /dev/null
 +++ b/setup.py
 @@ -0,0 +1,35 @@

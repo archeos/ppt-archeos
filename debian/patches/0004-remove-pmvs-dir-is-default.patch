@@ -1,3 +1,14 @@
+From: Romain Janvier <romain.janvier@hotmail.fr>
+Date: Wed, 23 Jan 2013 10:20:38 +0100
+Subject: remove-pmvs-dir-is-default
+
+---
+ osmcmvs/__init__.py |    8 ++++++--
+ osmpmvs/__init__.py |    8 ++++++--
+ 2 files changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/osmcmvs/__init__.py b/osmcmvs/__init__.py
+index 382c764..eff17f1 100755
 --- a/osmcmvs/__init__.py
 +++ b/osmcmvs/__init__.py
 @@ -69,8 +69,12 @@ class OsmCmvs():
@@ -15,6 +26,8 @@
          # Create directory structure
          os.mkdir("pmvs/txt")
          os.mkdir("pmvs/visualize")
+diff --git a/osmpmvs/__init__.py b/osmpmvs/__init__.py
+index 19361e2..df59afc 100755
 --- a/osmpmvs/__init__.py
 +++ b/osmpmvs/__init__.py
 @@ -63,8 +63,12 @@ class OsmPmvs():

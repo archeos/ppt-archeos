@@ -1,0 +1,287 @@
+From: Romain Janvier <romain.janvier@hotmail.fr>
+Date: Wed, 23 Jan 2013 10:34:59 +0100
+Subject: Remove inconsitent use of logging
+
+---
+ RunBundler.py                     |    5 -----
+ RunCMVS.py                        |    5 -----
+ RunPMVS.py                        |    4 ----
+ osmbundler/__init__.py            |   15 +++++++--------
+ osmbundler/features/sift.py       |    4 ++--
+ osmbundler/features/siftlowe.py   |    2 +-
+ osmbundler/features/siftvlfeat.py |    6 +++---
+ osmbundler/matching/bundler.py    |    6 +++---
+ osmcmvs/__init__.py               |    7 +++----
+ osmpmvs/__init__.py               |    7 +++----
+ 10 files changed, 22 insertions(+), 39 deletions(-)
+
+diff --git a/RunBundler.py b/RunBundler.py
+index 7ca498e..3d8532c 100644
+--- a/RunBundler.py
++++ b/RunBundler.py
+@@ -1,9 +1,6 @@
+ #!/usr/bin/python -u
+-import logging
+ import osmbundler
+ 
+-logging.basicConfig(level=logging.INFO, format="%(message)s")
+-
+ def main():
+ 	"""Main function: 	
+ 	initialize OsmBundler manager class
+@@ -18,5 +15,3 @@ def main():
+ 
+ if __name__ == '__main__':
+ 	main()
+-
+-
+diff --git a/RunCMVS.py b/RunCMVS.py
+index 7e30916..0e02e30 100644
+--- a/RunCMVS.py
++++ b/RunCMVS.py
+@@ -1,10 +1,7 @@
+ #!/usr/bin/python -u
+ 
+-import logging
+ import osmcmvs
+ 
+-logging.basicConfig(level=logging.INFO, format="%(message)s")
+-
+ def main():
+ 	"""Main function"""
+ 	# initialize OsmCMVS manager class
+@@ -16,5 +13,3 @@ def main():
+ 
+ if __name__ == '__main__':
+ 	main()
+-
+-
+diff --git a/RunPMVS.py b/RunPMVS.py
+index 78031b9..cb1169f 100644
+--- a/RunPMVS.py
++++ b/RunPMVS.py
+@@ -1,10 +1,6 @@
+ #!/usr/bin/python -u
+-
+-import logging
+ import osmpmvs
+ 
+-logging.basicConfig(level=logging.INFO, format="%(message)s")
+-
+ def main():
+ 	"""Main function:
+ 	run osmpmvs pipeline
+diff --git a/osmbundler/__init__.py b/osmbundler/__init__.py
+index a9146a7..0caac83 100755
+--- a/osmbundler/__init__.py
++++ b/osmbundler/__init__.py
+@@ -1,4 +1,3 @@
+-import logging
+ import sys, os, getopt, tempfile, subprocess, shutil
+ import sqlite3
+ 
+@@ -81,7 +80,7 @@ class OsmBundler():
+         # create a working directory
+ 		# TODO: Change working dir = pwd
+         self.workDir = tempfile.mkdtemp(prefix="osm-bundler-")
+-        logging.info("Working directory created: "+self.workDir)
++        print "Working directory created: "+self.workDir
+         
+         if not (os.path.isdir(self.photosArg) or os.path.isfile(self.photosArg)):
+             raise Exception, "'%s' is neither directory nor a file name" % self.photosArg
+@@ -233,7 +232,7 @@ class OsmBundler():
+     def _preparePhoto(self, photoInfo):
+         photo = photoInfo['basename']
+         photoDir = photoInfo['dirname']
+-        logging.info("\nProcessing photo '%s':" % photo)
++        "\nProcessing photo '%s':" % photo
+         inputFileName = os.path.join(photoDir, photo)
+         photo = self._getPhotoCopyName(photo)
+         outputFileNameJpg = "%s.jpg" % os.path.join(self.workDir, photo)
+@@ -255,7 +254,7 @@ class OsmBundler():
+             newWidth = int(scale * photoHandle.size[0])
+             newHeight = int(scale * photoHandle.size[1])
+             photoHandle = photoHandle.resize((newWidth, newHeight))
+-            logging.info("\tCopy of the photo has been scaled down to %sx%s" % (newWidth,newHeight))
++            print "\tCopy of the photo has been scaled down to %sx%s" % (newWidth,newHeight)
+         
+         photoInfo['width'] = photoHandle.size[0]
+         photoInfo['height'] = photoHandle.size[1]
+@@ -310,9 +309,9 @@ class OsmBundler():
+                         focalPixels = width * (focalLength / ccdWidth[0])
+                         hasFocal = True
+                         self.bundlerListFile.write("%s.jpg 0 %s\n" % (photo,SCALE*focalPixels))
+-            else: logging.info("\tEntry for the camera '%s', '%s' does not exist in the camera database" % (exif['Make'], exif['Model']))
++            else: print "\tEntry for the camera '%s', '%s' does not exist in the camera database" % (exif['Make'], exif['Model'])
+         if not hasFocal:
+-            logging.info("\tCan't estimate focal length in pixels for the photo '%s'" % os.path.join(photoInfo['dirname'],photoInfo['basename']))
++            print "\tCan't estimate focal length in pixels for the photo '%s'" % os.path.join(photoInfo['dirname'],photoInfo['basename'])
+             self.bundlerListFile.writelines("%s.jpg\n" % photo)
+ 
+ 
+@@ -348,7 +347,7 @@ class OsmBundler():
+     
+     def doBundleAdjustment(self):
+         # just run Bundler here
+-        logging.info("\nPerforming bundle adjustment...")
++        print "\nPerforming bundle adjustment..."
+         os.chdir(self.workDir)
+         os.mkdir("bundle")
+         
+@@ -361,7 +360,7 @@ class OsmBundler():
+         subprocess.call([bundlerExecutable, "list.txt", "--options_file", "options.txt"], **dict(stdout=bundlerOutputFile))
+         bundlerOutputFile.close()
+         os.chdir(self.currentDir)
+-        logging.info("Finished! See the results in the '%s' directory" % self.workDir)
++        print "Finished! See the results in the '%s' directory" % self.workDir
+     
+     def printHelpExit(self):
+         self.printHelp()
+diff --git a/osmbundler/features/sift.py b/osmbundler/features/sift.py
+index 7233d98..b142318 100755
+--- a/osmbundler/features/sift.py
++++ b/osmbundler/features/sift.py
+@@ -1,4 +1,4 @@
+-import sys, os, logging
++import sys, os
+ 
+ from extractor import FeatureExtractor
+ 
+@@ -15,7 +15,7 @@ class Sift(FeatureExtractor):
+             self.executable = os.path.join(distrDir, self.win32Executable)
+         else:
+             self.executable = os.path.join(self.linuxExecutable)
+-        logging.info("Sift executable path: %s" % self.executable)
++            print "Sift executable path: %s" % self.executable
+ 
+     def extract(self, photo, photoInfo):
+         pass
+diff --git a/osmbundler/features/siftlowe.py b/osmbundler/features/siftlowe.py
+index 04e13fb..400495c 100755
+--- a/osmbundler/features/siftlowe.py
++++ b/osmbundler/features/siftlowe.py
+@@ -23,4 +23,4 @@ class LoweSift(Sift):
+         siftGzipFile.writelines(siftTextFile)
+         siftGzipFile.close()
+         siftTextFile.close()
+-        os.remove("%s.key" % photo)
+\ No newline at end of file
++        os.remove("%s.key" % photo)
+diff --git a/osmbundler/features/siftvlfeat.py b/osmbundler/features/siftvlfeat.py
+index e49fe8b..518eb5a 100755
+--- a/osmbundler/features/siftvlfeat.py
++++ b/osmbundler/features/siftvlfeat.py
+@@ -1,4 +1,4 @@
+-import os, subprocess, gzip, logging
++import os, subprocess, gzip
+ 
+ from sift import Sift
+ 
+@@ -12,7 +12,7 @@ class VlfeatSift(Sift):
+         Sift.__init__(self, distrDir)
+ 
+     def extract(self, photo, photoInfo):
+-        logging.info("\tExtracting features with the SIFT method from VLFeat library...")
++        print "\tExtracting features with the SIFT method from VLFeat library..."
+         subprocess.call([self.executable, "%s.jpg.pgm" % photo, "-o", "%s.key" % photo])
+         # perform conversion to David Lowe's format
+         vlfeatTextFile = open("%s.key" % photo, "r")
+@@ -35,4 +35,4 @@ class VlfeatSift(Sift):
+         vlfeatTextFile.close()
+         # remove original SIFT file
+         os.remove("%s.key" % photo)
+-        logging.info("\tFound %s features" % numFeatures)
++        print "\tFound %s features" % numFeatures
+diff --git a/osmbundler/matching/bundler.py b/osmbundler/matching/bundler.py
+index d98d6ed..47f7b54 100755
+--- a/osmbundler/matching/bundler.py
++++ b/osmbundler/matching/bundler.py
+@@ -1,4 +1,4 @@
+-import sys,os,subprocess,logging
++import sys,os,subprocess
+ 
+ from engine import MatchingEngine
+ 
+@@ -12,8 +12,8 @@ class BundlerMatching(MatchingEngine):
+             self.executable = os.path.join(distrDir, "bundler/bin/KeyMatchFull.exe")
+         else:
+             self.executable = "KeyMatchFull"
+-        logging.info("BundlerMatching executable path: %s" % self.executable)
++        print "BundlerMatching executable path: %s" % self.executable
+ 
+     def match(self):
+-        logging.info("\nPerforming feature matching...")
++        print "\nPerforming feature matching..."
+         subprocess.call([self.executable, self.featuresListFileName, self.outputFileName])
+diff --git a/osmcmvs/__init__.py b/osmcmvs/__init__.py
+index eff17f1..2f43dd9 100755
+--- a/osmcmvs/__init__.py
++++ b/osmcmvs/__init__.py
+@@ -1,4 +1,3 @@
+-import logging
+ import sys, os, getopt, subprocess, shutil
+ 
+ # service function: get path of an executable (.exe suffix is added if we are on Windows)
+@@ -44,7 +43,7 @@ class OsmCmvs():
+         self.currentDir = os.getcwd()
+         # create a working directory
+         self.workDir = self.bundleOutArg
+-        logging.info("Working directory created: "+self.workDir)
++        print "Working directory created: "+self.workDir
+         
+         if not (os.path.isdir(self.bundleOutArg) or os.path.isfile(self.bundleOutArg)):
+             raise Exception, "'%s' is neither directory nor a file name" % self.bundleOutArg
+@@ -67,7 +66,7 @@ class OsmCmvs():
+     
+     def doBundle2PMVS(self):
+         # just run Bundle2PMVS here
+-        logging.info("\nPerforming Bundler2PMVS conversion...")
++        print "\nPerforming Bundler2PMVS conversion..."
+         os.chdir(self.workDir)
+         try:
+             os.mkdir("pmvs")
+@@ -109,7 +108,7 @@ class OsmCmvs():
+         
+         undistortTextFile.close()
+ 		
+-        logging.info("Finished!")
++        print "Finished!"
+     
+     def doCMVS(self):
+       os.chdir(os.path.join(self.workDir,"pmvs"))
+diff --git a/osmpmvs/__init__.py b/osmpmvs/__init__.py
+index df59afc..90c69bb 100755
+--- a/osmpmvs/__init__.py
++++ b/osmpmvs/__init__.py
+@@ -1,4 +1,3 @@
+-import logging
+ import sys, os, getopt, tempfile, subprocess, shutil
+ 
+ # service function: get path of an executable (.exe suffix is added if we are on Windows)
+@@ -40,7 +39,7 @@ class OsmPmvs():
+         self.currentDir = os.getcwd()
+         # create a working directory
+         self.workDir = self.bundleOutArg
+-        logging.info("Working directory created: "+self.workDir)
++        print "Working directory created: "+self.workDir
+         
+         if not (os.path.isdir(self.bundleOutArg) or os.path.isfile(self.bundleOutArg)):
+             raise Exception, "'%s' is neither directory nor a file name" % self.bundleOutArg
+@@ -61,7 +60,7 @@ class OsmPmvs():
+     
+     def doBundle2PMVS(self):
+         # just run Bundle2PMVS here
+-        logging.info("\nPerforming Bundler2PMVS conversion...")
++        print "\nPerforming Bundler2PMVS conversion..."
+         os.chdir(self.workDir)
+         try:
+             os.mkdir("pmvs")
+@@ -103,7 +102,7 @@ class OsmPmvs():
+         
+         undistortTextFile.close()
+ 		
+-        logging.info("Finished!")
++        print "Finished!"
+         
+     def doPMVS(self):
+         print "Run PMVS2 : %s " % pmvsExecutable

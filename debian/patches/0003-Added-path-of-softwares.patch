@@ -1,3 +1,31 @@
+From: Romain Janvier <romain.janvier@hotmail.fr>
+Date: Wed, 23 Jan 2013 10:20:38 +0100
+Subject: Added-path-of-softwares
+
+---
+ RunBundler.py                     |    1 +
+ osmbundler/__init__.py            |   75 +++++++++++++++++++------------------
+ osmbundler/features/sift.py       |    4 +-
+ osmbundler/features/siftvlfeat.py |    4 +-
+ osmbundler/matching/bundler.py    |    4 +-
+ osmcmvs/__init__.py               |   14 +++----
+ osmpmvs/__init__.py               |    8 ++--
+ 7 files changed, 56 insertions(+), 54 deletions(-)
+
+diff --git a/RunBundler.py b/RunBundler.py
+index 9289899..7ca498e 100644
+--- a/RunBundler.py
++++ b/RunBundler.py
+@@ -10,6 +10,7 @@ def main():
+ 	and run Bundler pipeline
+ 	"""
+ 	manager = osmbundler.OsmBundler()
++	manager.checkConfig()
+ 	manager.preparePhotos()
+ 	manager.matchFeatures()
+ 	manager.doBundleAdjustment()
+diff --git a/osmbundler/__init__.py b/osmbundler/__init__.py
+index 9f0569e..a9146a7 100755
 --- a/osmbundler/__init__.py
 +++ b/osmbundler/__init__.py
 @@ -1,5 +1,5 @@
@@ -14,13 +42,12 @@
 +# Todo maybe better w/ glob
  def getPhotosFromDirectory(photoDir):
 -    return [f for f in os.listdir(photoDir) if os.path.isfile(os.path.join(photoDir, f)) and os.path.splitext(f)[1].lower()==".jpg"]
--
--
--distrPath = os.path.dirname( os.path.abspath(sys.argv[0]) )
 +    return [f for f in os.listdir(photoDir) 
 +			if os.path.isfile(os.path.join(photoDir, f)) 
 +			and os.path.splitext(f)[1].lower()==".jpg"]
-+
+ 
+-
+-distrPath = os.path.dirname( os.path.abspath(sys.argv[0]) )
 +#
 +distrPath = os.path.dirname(os.path.abspath(sys.argv[0]))
 +print distrPath
@@ -31,32 +58,32 @@
 +	bundlerExecutable = os.path.join(distrPath, "software/bundler/bin/bundler.exe")
 +else: 
 +	bundlerExecutable =  "Bundler"
-+
+ 
+-SCALE = 1.0
+-bundlerListFileName = "list.txt"
 +# Database is a dot file, must be copied on first call if doesn't 
 +# exist... (change not compatible with Windows)
 +# TODO : cameraDbInstall is harcoded, it should be dynamic (see distutils)
 +camerasDbInstall = "cameras/cameras.sqlite"
 +camerasDatabase =  os.path.join(os.path.expanduser("~"),  ".ppt/cameras.sqlite")
-+
-+commandLineLongFlags = [
-+	"photos=",
-+	"maxPhotoDimension=",
-+	"featureExtractor=",
-+	"photoScalingFactor=",
-+	"checkCameraDatabase"
-+	]
  
- SCALE = 1.0
- bundlerListFileName = "list.txt"
--
 -camerasDatabase = os.path.join(distrPath, "osmbundler/cameras/cameras.sqlite")
--commandLineLongFlags = [
+ commandLineLongFlags = [
 -"photos=",
 -"maxPhotoDimension=",
 -"featureExtractor=",
 -"photoScalingFactor=",
 -"checkCameraDatabase"
 -]
++	"photos=",
++	"maxPhotoDimension=",
++	"featureExtractor=",
++	"photoScalingFactor=",
++	"checkCameraDatabase"
++	]
++
++SCALE = 1.0
++bundlerListFileName = "list.txt"
  exifAttrs = set(["Model", "Make", "ExifImageWidth", "ExifImageHeight", "FocalLength"])
  
  class ZeroValueException(Exception):
@@ -159,6 +186,24 @@
          conn = sqlite3.connect(camerasDatabase)
          self.dbCursor = conn.cursor()
      
+diff --git a/osmbundler/features/sift.py b/osmbundler/features/sift.py
+index a5f5edb..7233d98 100755
+--- a/osmbundler/features/sift.py
++++ b/osmbundler/features/sift.py
+@@ -14,8 +14,8 @@ class Sift(FeatureExtractor):
+         if sys.platform == "win32":
+             self.executable = os.path.join(distrDir, self.win32Executable)
+         else:
+-            self.executable = os.path.join(distrDir, self.linuxExecutable)
++            self.executable = os.path.join(self.linuxExecutable)
+         logging.info("Sift executable path: %s" % self.executable)
+ 
+     def extract(self, photo, photoInfo):
+-        pass
+\ No newline at end of file
++        pass
+diff --git a/osmbundler/features/siftvlfeat.py b/osmbundler/features/siftvlfeat.py
+index c967772..e49fe8b 100755
 --- a/osmbundler/features/siftvlfeat.py
 +++ b/osmbundler/features/siftvlfeat.py
 @@ -6,7 +6,7 @@ className = "VlfeatSift"
@@ -177,6 +222,8 @@
 -        logging.info("\tFound %s features" % numFeatures)
 \ No newline at end of file
 +        logging.info("\tFound %s features" % numFeatures)
+diff --git a/osmbundler/matching/bundler.py b/osmbundler/matching/bundler.py
+index 298b830..d98d6ed 100755
 --- a/osmbundler/matching/bundler.py
 +++ b/osmbundler/matching/bundler.py
 @@ -11,9 +11,9 @@ class BundlerMatching(MatchingEngine):
@@ -192,28 +239,8 @@
 -        subprocess.call([self.executable, self.featuresListFileName, self.outputFileName])
 \ No newline at end of file
 +        subprocess.call([self.executable, self.featuresListFileName, self.outputFileName])
---- a/osmpmvs/__init__.py
-+++ b/osmpmvs/__init__.py
-@@ -8,15 +8,15 @@ def getExecPath(dir, fileName):
-     
- distrPath = os.path.dirname( os.path.abspath(sys.argv[0]) )
- 
--pmvsExecutable = getExecPath(distrPath, "software/pmvs/bin/pmvs2")
-+pmvsExecutable = "pmvs2"
- 
- bundlerBinPath = ''
- if sys.platform == "win32": bundlerBinPath = os.path.join(distrPath, "software/bundler/bin/")
- else: bundlerBinPath = os.path.join(distrPath, "software/bundler/bin/")
- 
--bundler2PmvsExecutable = getExecPath(bundlerBinPath, "Bundle2PMVS")
--RadialUndistordExecutable = getExecPath(bundlerBinPath, "RadialUndistort")
--Bundle2VisExecutable = getExecPath(bundlerBinPath, "Bundle2Vis")
-+bundler2PmvsExecutable =  "Bundle2PMVS"
-+RadialUndistordExecutable = "RadialUndistort"
-+Bundle2VisExecutable =  "Bundle2Vis"
- 
- bundlerListFileName = "list.txt"
- 
+diff --git a/osmcmvs/__init__.py b/osmcmvs/__init__.py
+index f86184f..382c764 100755
 --- a/osmcmvs/__init__.py
 +++ b/osmcmvs/__init__.py
 @@ -1,5 +1,5 @@
@@ -247,27 +274,27 @@
  
  bundlerListFileName = "list.txt"
  
---- a/RunBundler.py
-+++ b/RunBundler.py
-@@ -10,6 +10,7 @@ def main():
- 	and run Bundler pipeline
- 	"""
- 	manager = osmbundler.OsmBundler()
-+	manager.checkConfig()
- 	manager.preparePhotos()
- 	manager.matchFeatures()
- 	manager.doBundleAdjustment()
---- a/osmbundler/features/sift.py
-+++ b/osmbundler/features/sift.py
-@@ -14,8 +14,8 @@ class Sift(FeatureExtractor):
-         if sys.platform == "win32":
-             self.executable = os.path.join(distrDir, self.win32Executable)
-         else:
--            self.executable = os.path.join(distrDir, self.linuxExecutable)
-+            self.executable = os.path.join(self.linuxExecutable)
-         logging.info("Sift executable path: %s" % self.executable)
+diff --git a/osmpmvs/__init__.py b/osmpmvs/__init__.py
+index 02177d8..19361e2 100755
+--- a/osmpmvs/__init__.py
++++ b/osmpmvs/__init__.py
+@@ -8,15 +8,15 @@ def getExecPath(dir, fileName):
+     
+ distrPath = os.path.dirname( os.path.abspath(sys.argv[0]) )
  
-     def extract(self, photo, photoInfo):
--        pass
-\ No newline at end of file
-+        pass
+-pmvsExecutable = getExecPath(distrPath, "software/pmvs/bin/pmvs2")
++pmvsExecutable = "pmvs2"
+ 
+ bundlerBinPath = ''
+ if sys.platform == "win32": bundlerBinPath = os.path.join(distrPath, "software/bundler/bin/")
+ else: bundlerBinPath = os.path.join(distrPath, "software/bundler/bin/")
+ 
+-bundler2PmvsExecutable = getExecPath(bundlerBinPath, "Bundle2PMVS")
+-RadialUndistordExecutable = getExecPath(bundlerBinPath, "RadialUndistort")
+-Bundle2VisExecutable = getExecPath(bundlerBinPath, "Bundle2Vis")
++bundler2PmvsExecutable =  "Bundle2PMVS"
++RadialUndistordExecutable = "RadialUndistort"
++Bundle2VisExecutable =  "Bundle2Vis"
+ 
+ bundlerListFileName = "list.txt"
+ 

@@ -1,3 +1,15 @@
+From: Romain Janvier <romain.janvier@hotmail.fr>
+Date: Wed, 23 Jan 2013 10:20:38 +0100
+Subject: Prepend-Shebangs
+
+---
+ RunBundler.py |   21 +++++++++++++--------
+ RunCMVS.py    |   19 +++++++++++++------
+ RunPMVS.py    |   21 ++++++++++++++-------
+ 3 files changed, 40 insertions(+), 21 deletions(-)
+
+diff --git a/RunBundler.py b/RunBundler.py
+index a2c8a44..9289899 100644
 --- a/RunBundler.py
 +++ b/RunBundler.py
 @@ -1,16 +1,21 @@
@@ -30,6 +42,8 @@
 -
 -manager.openResult()
  
+diff --git a/RunCMVS.py b/RunCMVS.py
+index 0df1b6c..7e30916 100644
 --- a/RunCMVS.py
 +++ b/RunCMVS.py
 @@ -1,13 +1,20 @@
@@ -59,6 +73,8 @@
  
 -# call PMVS
 -manager.doCMVS()
+diff --git a/RunPMVS.py b/RunPMVS.py
+index e47c813..78031b9 100644
 --- a/RunPMVS.py
 +++ b/RunPMVS.py
 @@ -1,13 +1,20 @@
