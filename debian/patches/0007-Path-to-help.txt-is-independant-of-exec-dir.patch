@@ -1,0 +1,49 @@
+From: Romain Janvier <romain.janvier@hotmail.fr>
+Date: Wed, 23 Jan 2013 15:32:38 +0100
+Subject: Path to help.txt is independant of exec dir
+
+---
+ osmbundler/__init__.py |    2 +-
+ osmcmvs/__init__.py    |    2 +-
+ osmpmvs/__init__.py    |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/osmbundler/__init__.py b/osmbundler/__init__.py
+index 0caac83..1965505 100755
+--- a/osmbundler/__init__.py
++++ b/osmbundler/__init__.py
+@@ -372,7 +372,7 @@ class OsmBundler():
+         else: print "Thanks"
+     
+     def printHelp(self):
+-        helpFile = open(os.path.join(distrPath, "osmbundler/help.txt"), "r")
++        helpFile = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "help.txt"), "r")
+         print helpFile.read()
+         helpFile.close()
+ 
+diff --git a/osmcmvs/__init__.py b/osmcmvs/__init__.py
+index 2f43dd9..572729c 100755
+--- a/osmcmvs/__init__.py
++++ b/osmcmvs/__init__.py
+@@ -147,7 +147,7 @@ class OsmCmvs():
+     
+     def printHelp(self):
+         print "Error"
+-        helpFile = open(os.path.join(distrPath, "osmcmvs/help.txt"), "r")
++        helpFile = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "help.txt"), "r")
+         print helpFile.read()
+         helpFile.close()
+ 
+diff --git a/osmpmvs/__init__.py b/osmpmvs/__init__.py
+index 90c69bb..47e575b 100755
+--- a/osmpmvs/__init__.py
++++ b/osmpmvs/__init__.py
+@@ -122,7 +122,7 @@ class OsmPmvs():
+     
+     def printHelp(self):
+         print "Error"
+-        helpFile = open(os.path.join(distrPath, "osmpmvs/help.txt"), "r")
++        helpFile = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "help.txt"), "r")
+         print helpFile.read()
+         helpFile.close()
+ 
