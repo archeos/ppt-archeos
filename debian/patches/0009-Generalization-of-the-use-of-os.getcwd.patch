@@ -1,6 +1,6 @@
 --- a/osmcmvs/__init__.py
 +++ b/osmcmvs/__init__.py
-@@ -5,7 +5,7 @@ def getExecPath(dir, fileName):
+@@ -6,7 +6,7 @@ def getExecPath(dir, fileName):
      if sys.platform == "win32": fileName = "%s.exe" % fileName
      return os.path.join(dir, fileName)
      
@@ -9,7 +9,7 @@
  
  pmvsExecutable = "pmvs2"
  cmvsExecutable = "cmvs"
-@@ -90,7 +90,7 @@ class OsmCmvs():
+@@ -96,7 +96,7 @@ class OsmCmvs():
          print "Running Bundle2Vis to generate vis.dat"
          subprocess.call([Bundle2VisExecutable, "pmvs/bundle.rd.out", "pmvs/vis.dat"])
  
@@ -18,7 +18,7 @@
          #Rename all the files to the correct name
          undistortTextFile = open("list.rd.txt", "r")
          imagesStrings = undistortTextFile.readlines()
-@@ -111,7 +111,6 @@ class OsmCmvs():
+@@ -117,7 +117,6 @@ class OsmCmvs():
          print "Finished!"
      
      def doCMVS(self):
@@ -26,7 +26,7 @@
        subprocess.call([cmvsExecutable, "./", str(self.clusterToCompute)])
        subprocess.call([genOptionExecutable, "./"])
        
-@@ -126,24 +125,24 @@ class OsmCmvs():
+@@ -132,24 +131,24 @@ class OsmCmvs():
        #  for file in files:
        #    if "option-" in file:
        #      subprocess.call([pmvsExecutable, "./", file])
@@ -59,7 +59,7 @@
          print "Error"
 --- a/osmpmvs/__init__.py
 +++ b/osmpmvs/__init__.py
-@@ -84,7 +84,7 @@ class OsmPmvs():
+@@ -89,7 +89,7 @@ class OsmPmvs():
          print "Running Bundle2Vis to generate vis.dat"
          subprocess.call([Bundle2VisExecutable, "pmvs/bundle.rd.out", "pmvs/vis.dat"])
  
@@ -68,7 +68,7 @@
          #Rename all the files to the correct name
          undistortTextFile = open("list.rd.txt", "r")
          imagesStrings = undistortTextFile.readlines()
-@@ -107,9 +107,9 @@ class OsmPmvs():
+@@ -112,9 +112,9 @@ class OsmPmvs():
      def doPMVS(self):
          print "Run PMVS2 : %s " % pmvsExecutable
          subprocess.call([pmvsExecutable, "./", "pmvs_options.txt"])
@@ -81,7 +81,7 @@
          else: print "Thanks"
  
      def printHelpExit(self):
-@@ -117,8 +117,8 @@ class OsmPmvs():
+@@ -122,8 +122,8 @@ class OsmPmvs():
          sys.exit(2)
      
      def openResult(self):

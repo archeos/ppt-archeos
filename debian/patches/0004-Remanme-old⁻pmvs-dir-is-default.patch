@@ -9,11 +9,16 @@ the target directory
  osmpmvs/__init__.py |    8 ++++++--
  2 files changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/osmcmvs/__init__.py b/osmcmvs/__init__.py
-index 382c764..eff17f1 100755
 --- a/osmcmvs/__init__.py
 +++ b/osmcmvs/__init__.py
-@@ -69,8 +69,12 @@ class OsmCmvs():
+@@ -1,5 +1,5 @@
+ import logging
+-import sys, os, getopt, subprocess, shutil
++import sys, os, getopt, subprocess, shutil, tempfile
+ 
+ # service function: get path of an executable (.exe suffix is added if we are on Windows)
+ def getExecPath(dir, fileName):
+@@ -69,8 +69,17 @@ class OsmCmvs():
          # just run Bundle2PMVS here
          logging.info("\nPerforming Bundler2PMVS conversion...")
          os.chdir(self.workDir)
@@ -21,18 +26,21 @@ index 382c764..eff17f1 100755
 -
 +        try:
 +            os.mkdir("pmvs")
-+        #New behavior: remove pmvs dir
-+        except OSError:
-+            shutil.rmtree("pmvs")
++        # New behavior: move old pmvs dir
++        except OSError, e:
++            if e.errno != 17:
++                raise
++            print "pmvs dir already exists in " + os.getcwd() + "..." 
++            cpydir = tempfile.mkdtemp(prefix="pmvs-", dir=os.getcwd())
++            print "...moving it to " + cpydir
++            os.renames("pmvs", cpydir)
 +            os.mkdir("pmvs")
          # Create directory structure
          os.mkdir("pmvs/txt")
          os.mkdir("pmvs/visualize")
-diff --git a/osmpmvs/__init__.py b/osmpmvs/__init__.py
-index 19361e2..df59afc 100755
 --- a/osmpmvs/__init__.py
 +++ b/osmpmvs/__init__.py
-@@ -63,8 +63,12 @@ class OsmPmvs():
+@@ -63,8 +63,17 @@ class OsmPmvs():
          # just run Bundle2PMVS here
          logging.info("\nPerforming Bundler2PMVS conversion...")
          os.chdir(self.workDir)
@@ -40,9 +48,14 @@ index 19361e2..df59afc 100755
 -
 +        try:
 +            os.mkdir("pmvs")
-+        #New behavior: remove pmvs dir
-+        except OSError:
-+            shutil.rmtree("pmvs")
++        # New behavior: move old pmvs dir
++        except OSError, e:
++            if e.errno != 17:
++                raise
++            print "pmvs dir already exists in " + os.getcwd() + "..." 
++            cpydir = tempfile.mkdtemp(prefix="pmvs-", dir=os.getcwd())
++            print "...moving it to " + cpydir
++            os.renames("pmvs", cpydir)
 +            os.mkdir("pmvs")
          # Create directory structure
          os.mkdir("pmvs/txt")
