@@ -8,11 +8,33 @@ Subject: Path to help.txt is independant of exec dir
  osmpmvs/__init__.py    |    2 +-
  3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/osmbundler/__init__.py b/osmbundler/__init__.py
-index 0caac83..1965505 100755
 --- a/osmbundler/__init__.py
 +++ b/osmbundler/__init__.py
-@@ -372,7 +372,7 @@ class OsmBundler():
+@@ -30,8 +30,9 @@ else:
+ 
+ # Database is a dot file, must be copied on first call if doesn't 
+ # exist... (change not compatible with Windows)
+-# TODO : cameraDbInstall is harcoded, it should be dynamic (see distutils)
+-camerasDbInstall = "cameras/cameras.sqlite"
++camerasDbInstall = os.path.join(
++        os.path.dirname(os.path.abspath(__file__)),
++        "cameras/cameras.sqlite")
+ camerasDatabase =  os.path.join(os.path.expanduser("~"),  ".ppt/cameras.sqlite")
+ 
+ commandLineLongFlags = [
+@@ -127,7 +128,10 @@ class OsmBundler():
+     
+     def checkConfig(self, *kargs, **kwargs):
+         if not os.path.exists(camerasDatabase):
+-            os.mkdir(os.path.dirname(camerasDatabase))
++            try:
++                os.mkdir(os.path.dirname(camerasDatabase))
++            except OSError:
++                pass
+             shutil.copy(camerasDbInstall, camerasDatabase)
+ 
+ 
+@@ -372,7 +376,7 @@ class OsmBundler():
          else: print "Thanks"
      
      def printHelp(self):
@@ -21,8 +43,6 @@ index 0caac83..1965505 100755
          print helpFile.read()
          helpFile.close()
  
-diff --git a/osmcmvs/__init__.py b/osmcmvs/__init__.py
-index 2f43dd9..572729c 100755
 --- a/osmcmvs/__init__.py
 +++ b/osmcmvs/__init__.py
 @@ -147,7 +147,7 @@ class OsmCmvs():
@@ -34,8 +54,6 @@ index 2f43dd9..572729c 100755
          print helpFile.read()
          helpFile.close()
  
-diff --git a/osmpmvs/__init__.py b/osmpmvs/__init__.py
-index 90c69bb..47e575b 100755
 --- a/osmpmvs/__init__.py
 +++ b/osmpmvs/__init__.py
 @@ -122,7 +122,7 @@ class OsmPmvs():
