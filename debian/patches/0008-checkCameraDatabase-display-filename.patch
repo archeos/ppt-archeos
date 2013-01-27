@@ -1,0 +1,33 @@
+--- a/osmbundler/__init__.py
++++ b/osmbundler/__init__.py
+@@ -212,14 +212,15 @@ class OsmBundler():
+             ccdWidth = self.getCcdWidthFromDatabase(exifMake, exifModel)
+             if ccdWidth==None:
+                 while True:
+-                    print "Type CCD width in mm for the camera %s, %s. Press Enter to skip the camera." % (exifMake, exifModel)
++                    print "Type CCD width in mm for the camera %s, %s for [%s]. Press Enter to skip the camera." % (exifMake, exifModel,
++                            photoPath)
+                     userInput = raw_input("CCD width in mm: ")
+                     # Enter key was pressed
+                     if not userInput: return
+                     try:
+                         ccdWidth = float(userInput)
+                         if ccdWidth==0: raise ZeroValueException
+-                        self.dbCursor.execute("insert into cameras(make, model, ccd_width, source) values(?, ?, ?, 2)", (exifMake, exifModel, ccdWidth))
++                        self.dbCursor.execute("Insert into cameras(make, model, ccd_width, source) values(?, ?, ?, 2)", (exifMake, exifModel, ccdWidth))
+                     except ZeroValueException:
+                         print "\nCCD width can not be equal to zero."
+                     except ValueError:
+@@ -227,10 +228,10 @@ class OsmBundler():
+                     except:
+                         print "\nCan not insert CCD width to the database."
+                     else:
+-                        print "CCD width %s for the cameras %s,%s has been successively inserted to the database" % (ccdWidth, exifMake, exifModel)
++                        print " CCD width %s for the cameras %s,%s has been successively inserted to the database" % (ccdWidth, exifMake, exifModel)
+                         return
+ 	    else:
+-		print "Camera is already inserted into the database"
++		print "[%s] Camera is already inserted into the database" % photoPath
+                 return
+                 
+     def _preparePhoto(self, photoInfo):
