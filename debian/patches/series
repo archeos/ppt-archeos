@@ -6,3 +6,4 @@
 0006-Remove-Windows-EOL.patch
 0007-Paths-to-assets-is-independant-of-exec-dir.patch
 0008-checkCameraDatabase-display-filename.patch
+0009-Generalization-of-the-use-of-os.getcwd.patch

@@ -1,0 +1,94 @@
+--- a/osmcmvs/__init__.py
++++ b/osmcmvs/__init__.py
+@@ -5,7 +5,7 @@ def getExecPath(dir, fileName):
+     if sys.platform == "win32": fileName = "%s.exe" % fileName
+     return os.path.join(dir, fileName)
+     
+-distrPath = os.path.dirname( os.path.abspath(sys.argv[0]) )
++distrPath = os.path.dirname(os.path.abspath(sys.argv[0]))
+ 
+ pmvsExecutable = "pmvs2"
+ cmvsExecutable = "cmvs"
+@@ -90,7 +90,7 @@ class OsmCmvs():
+         print "Running Bundle2Vis to generate vis.dat"
+         subprocess.call([Bundle2VisExecutable, "pmvs/bundle.rd.out", "pmvs/vis.dat"])
+ 
+-        os.chdir(os.path.join(self.workDir,"pmvs"))
++        os.chdir(os.path.join(os.getcwd(),"pmvs"))
+         #Rename all the files to the correct name
+         undistortTextFile = open("list.rd.txt", "r")
+         imagesStrings = undistortTextFile.readlines()
+@@ -111,7 +111,6 @@ class OsmCmvs():
+         print "Finished!"
+     
+     def doCMVS(self):
+-      os.chdir(os.path.join(self.workDir,"pmvs"))
+       subprocess.call([cmvsExecutable, "./", str(self.clusterToCompute)])
+       subprocess.call([genOptionExecutable, "./"])
+       
+@@ -126,24 +125,24 @@ class OsmCmvs():
+       #  for file in files:
+       #    if "option-" in file:
+       #      subprocess.call([pmvsExecutable, "./", file])
+-	print "Finished! See the results in the '%s' directory" % self.workDir
+-	if sys.platform == "win32": subprocess.call(["explorer", self.workDir])
+-	if sys.platform == "linux2": subprocess.call(["xdg-open", self.workDir])
++	print "Finished! See the results in the '%s' directory" % os.getcwd()
++	if sys.platform == "win32": subprocess.call(["explorer", os.getcwd()])
++	if sys.platform == "linux2": subprocess.call(["xdg-open", os.getcwd()])
+         else: print "Thanks"
+         
+     def doPMVS(self, path, optionFile):
+         os.chdir(os.path.join(path,"pmvs"))
+         print "Run PMVS2 : %s " % pmvsExecutable
+         subprocess.call([pmvsExecutable, "./", optionFile])
+-	print "Finished! See the results in the '%s' directory" % self.workDir
++	print "Finished! See the results in the '%s' directory" % os.getcwd()
+     
+     def printHelpExit(self):
+         self.printHelp()
+         sys.exit(2)
+     
+     def openResult(self):
+-        if sys.platform == "win32": subprocess.call(["explorer", self.workDir])
+-        else: print "See the results in the '%s' directory" % self.workDir
++        if sys.platform == "win32": subprocess.call(["explorer", os.getcwd()])
++        else: print "See the results in the '%s' directory" % os.getcwd()
+     
+     def printHelp(self):
+         print "Error"
+--- a/osmpmvs/__init__.py
++++ b/osmpmvs/__init__.py
+@@ -84,7 +84,7 @@ class OsmPmvs():
+         print "Running Bundle2Vis to generate vis.dat"
+         subprocess.call([Bundle2VisExecutable, "pmvs/bundle.rd.out", "pmvs/vis.dat"])
+ 
+-        os.chdir(os.path.join(self.workDir,"pmvs"))
++        os.chdir(os.path.join(os.getcwd(),"pmvs"))
+         #Rename all the files to the correct name
+         undistortTextFile = open("list.rd.txt", "r")
+         imagesStrings = undistortTextFile.readlines()
+@@ -107,9 +107,9 @@ class OsmPmvs():
+     def doPMVS(self):
+         print "Run PMVS2 : %s " % pmvsExecutable
+         subprocess.call([pmvsExecutable, "./", "pmvs_options.txt"])
+-	print "Finished! See the results in the '%s' directory" % self.workDir
+-	if sys.platform == "win32": subprocess.call(["explorer", self.workDir])
+-	if sys.platform == "linux2": subprocess.call(["xdg-open", self.workDir])
++	print "Finished! See the results in the '%s' directory" % os.getcwd()
++	if sys.platform == "win32": subprocess.call(["explorer", os.getcwd()])
++	if sys.platform == "linux2": subprocess.call(["xdg-open", os.getcwd()])
+         else: print "Thanks"
+ 
+     def printHelpExit(self):
+@@ -117,8 +117,8 @@ class OsmPmvs():
+         sys.exit(2)
+     
+     def openResult(self):
+-        if sys.platform == "win32": subprocess.call(["explorer", self.workDir])
+-        else: print "See the results in the '%s' directory" % self.workDir
++        if sys.platform == "win32": subprocess.call(["explorer", os.getcwd()])
++        else: print "See the results in the '%s' directory" % os.getcwd()
+     
+     def printHelp(self):
+         print "Error"
