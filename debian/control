@@ -1,5 +1,5 @@
 Source: ppt
-Section: photogrammetry
+Section: python
 Priority: extra
 Maintainer: Romain Janvier <romain.janvier@hotmail.fr>
 Build-Depends: python, debhelper (>= 9.0.0)
