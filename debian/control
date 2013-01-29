@@ -1,5 +1,5 @@
 Source: ppt
-Section: python
+Section: contrib/python
 Priority: extra
 Maintainer: Romain Janvier <romain.janvier@hotmail.fr>
 Build-Depends: python, debhelper (>= 9.0.0)
@@ -20,7 +20,11 @@ Description: Python Photogrammetry Toolbox
  Windows. Python scripting language is multiplatform, so the same 
  code will be ok to run Bundler and the other tools on Windows, 
  Linux and MacOS! No more cygwin installation. 
- This project make the Sift detector from VLFeat 
- library works with Bundler. The pipeline is OpenSource
+ This project make the SIFT detector from VLFeat 
+ library works with Bundler. The pipeline is Open Source
  from A to Z. Other modules could be plug into because of the 
- modularity approach that have been chosen (siftGPU...)
+ modularity approach that have been chosen (siftGPU...).
+ .
+ PLEASE NOTE that even if VLFeat is Open Souce, it is an implementation 
+ of the SIFT algorithm which is patented and must NOT be use for commercial 
+ purpose.  
