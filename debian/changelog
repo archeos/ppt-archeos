@@ -1,3 +1,14 @@
+ppt (0.1-0archeos3) theodoric; urgency=low
+
+  [ Romain Janvier ]
+  * Added some notes on patent issues
+  * Changed dependency to fit with new vlfeat package
+
+  [ Fabrizio Furnari ]
+  * Fixed error in changelog
+
+ -- Fabrizio Furnari <fixed@borodin.venere.it>  Thu, 07 Mar 2013 15:12:37 +0100
+
 ppt (0.1-0archeos2) theodoric; urgency=low
 
   * Added 'unbuffered' mode for proper command line 
