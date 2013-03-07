@@ -1,4 +1,4 @@
-ppt (0.1-0archeos2) therodoric; urgency=low
+ppt (0.1-0archeos2) theodoric; urgency=low
 
   * Added 'unbuffered' mode for proper command line 
     streaming in ppt-gui
